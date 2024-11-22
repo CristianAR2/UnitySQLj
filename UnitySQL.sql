@@ -115,3 +115,107 @@ CREATE TABLE usuario (
     CONSTRAINT FK_usuario_rol FOREIGN KEY (rol) REFERENCES rol(id)
 );
 GO
+
+  
+-- Tabla sala 
+INSERT INTO sala (nombre, mesas) VALUES 
+('Sala Principal', 10), 
+('Terraza', 8), 
+('VIP', 4), 
+('Zona Exterior', 6), 
+('Comedor', 12); 
+
+-- Tabla rol 
+INSERT INTO rol (nombre) VALUES 
+('Administrador'), 
+('Mesero'), 
+('Cocinero'), 
+('Cajero'), 
+('Limpieza');  
+
+-- Tabla horarios 
+INSERT INTO horarios (horas, descripcion, turno) VALUES 
+(8, 'Turno Mañana', 'Mañana'), 
+(6, 'Turno Tarde', 'Tarde'), 
+(4, 'Turno Noche', 'Noche'), 
+(10, 'Turno Completo', 'Completo'), 
+(5, 'Turno Especial', 'Especial');  
+
+-- Tabla empleado 
+INSERT INTO empleado (nombre, documento, cargo, id_rol, id_horario) 
+VALUES 
+('Juan Perez', '123456789', 'Mesero', 2, 1), 
+('Maria Gomez', '987654321', 'Cocinera', 3, 2), 
+('Carlos Diaz', '456789123', 'Cajero', 4, 3), 
+('Ana Martinez', '789123456', 'Limpieza', 5, 4), 
+('Sofia Rodriguez', '321654987', 'Administrador', 1, 5);  -- Tabla formas_pago  
+INSERT INTO formas_pago ([desc]) VALUES 
+('Efectivo'), ('Tarjeta de Crédito'), 
+('Tarjeta de Débito'), 
+('Transferencia Bancaria'), 
+('Pago Móvil');  
+
+-- Tabla usuario  
+INSERT INTO usuario (nombre, correo, pass, rol) VALUES 
+('admin', 'admin@example.com', 'password1', 1), 
+('mesero1', 'mesero1@example.com', 'password2', 2), 
+('cocinero1', 'cocinero1@example.com', 'password3', 3), 
+('cajero1', 'cajero1@example.com', 'password4', 4), 
+('limpieza1', 'limpieza1@example.com', 'password5', 5);  
+
+-- Tabla pedido  
+INSERT INTO pedido (id_sala, num_mesa, fecha, total, estado, usuario) 
+VALUES  
+(1, 1, GETDATE(), 25000.50, 'PENDIENTE', 'admin'), 
+(2, 2, GETDATE(), 45000.75, 'FINALIZADO', 'mesero1'),  
+(3, 3, GETDATE(), 15000.00, 'PENDIENTE', 'cocinero1'),  
+(4, 4, GETDATE(), 37000.25, 'FINALIZADO', 'cajero1'),  
+(5, 5, GETDATE(), 18000.00, 'PENDIENTE', 'limpieza1');  
+
+-- Tabla detalle_pedido  
+INSERT INTO detalle_pedido (nombre, precio, cantidad, id_pedido) VALUES 
+('Bandeja Paisa', 15000.00, 2, 1),  
+('Ajiaco', 12000.00, 1, 2),  
+('Arepa de Huevo', 5000.00, 3, 3),  
+('Sancocho', 18000.00, 1, 4),  
+('Empanadas', 3000.00, 5, 5);  
+
+-- Tabla detalle_factura  
+INSERT INTO detalle_factura (id_detallepedido) VALUES 
+(1), (2), (3), (4), (5); 
+
+-- Tabla factura  
+INSERT INTO factura (codigo, fecha, total, id_formas, id_detallefactura) 
+VALUES 
+(1234567890, GETDATE(), 35000.50, 1, 1), 
+(9876543210, GETDATE(), 15000.75, 2, 2),  
+(4567891230, GETDATE(), 12000.00, 3, 3),  
+(7891234560, GETDATE(), 25000.25, 4, 4),  
+(3216549870, GETDATE(), 18000.00, 5, 5);  
+
+-- Tabla platos  
+INSERT INTO platos (id, nombre, precio, fecha, pedidos) VALUES  
+(1, 'Bandeja Paisa', 15000.00, '2024-11-01', 1),  
+(2, 'Ajiaco', 12000.00, '2024-11-02', 2),  
+(3, 'Arepa de Huevo', 5000.00, '2024-11-03', 3),  
+(4, 'Sancocho', 18000.00, '2024-11-04', 4),  
+(5, 'Empanadas', 3000.00, '2024-11-05', 5);  
+GO
+
+CREATE PROCEDURE ObtenerInscripciones
+AS
+BEGIN
+    SELECT 
+        I.InscripcionID,
+        E.Nombre + ' ' + E.Apellido AS Estudiante,
+        C.NombreCurso AS Curso,
+        I.FechaInscripcion
+    FROM Inscripciones I
+    INNER JOIN Estudiantes E ON I.EstudianteID = E.EstudianteID
+    INNER JOIN Cursos C ON I.CursoID = C.CursoID
+    ORDER BY Estudiante ASC;
+END;
+GO
+
+EXEC ObtenerInscripciones;
+
